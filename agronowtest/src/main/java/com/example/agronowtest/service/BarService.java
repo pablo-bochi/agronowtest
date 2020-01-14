@@ -41,8 +41,7 @@ public class BarService {
 	public Bar save(Bar bar) throws BadResourceException, ResourceAlreadyExistsException {
         if (!StringUtils.isEmpty(bar.getName())) {
             if (bar.getId() != null && existsById(bar.getId())) { 
-                throw new ResourceAlreadyExistsException("Bar with id: " + bar.getId() +
-                        " already exists");
+                throw new ResourceAlreadyExistsException("Bar with id: " + bar.getId() + " already exists");
             }
             return barRepository.save(bar);
         }

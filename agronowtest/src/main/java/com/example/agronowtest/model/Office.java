@@ -2,16 +2,15 @@ package com.example.agronowtest.model;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class Bar implements Serializable {
+public class Office implements Serializable {
 
-	private static final long serialVersionUID = -6156959613548625127L;
+	private static final long serialVersionUID = -8574699109540885192L;
 
 	@Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -19,8 +18,6 @@ public class Bar implements Serializable {
 	
 	private String name;
 	private String address;
-	
-	@Column(unique=true)
 	private String coordinates;
 	
 	public Long getId() {
