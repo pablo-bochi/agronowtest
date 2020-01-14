@@ -3,6 +3,7 @@ package com.example.agronowtest.controller;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Random;
 
 import javax.validation.Valid;
 
@@ -25,25 +26,34 @@ import com.example.agronowtest.exception.BadResourceException;
 import com.example.agronowtest.exception.ResourceAlreadyExistsException;
 import com.example.agronowtest.exception.ResourceNotFoundException;
 import com.example.agronowtest.model.Bar;
+import com.example.agronowtest.model.Office;
+import com.example.agronowtest.model.RaffleResult;
 import com.example.agronowtest.service.BarService;
+import com.example.agronowtest.service.OfficeService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 public class BarController {
 
 	@Autowired
     private BarService barService;
+	private OfficeService officeService;
 	
-	private final int ROW_PER_PAGE = 5;
+	private final int ROW_PER_PAGE = 10;
 	
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
+	@ApiOperation(value = "Returns a list of all bars on database.")
 	@GetMapping(value = "/bars", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Bar>> findAll(@RequestParam(value="page", defaultValue="1") int pageNumber) {
         return ResponseEntity.ok(barService.findAll(pageNumber, ROW_PER_PAGE));
     }
 	
+	@ApiOperation(value = "Returns the bar with given id.")
 	@GetMapping(value = "/bars/{barId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Bar> findContactById(@PathVariable long barId) {
+    public ResponseEntity<Bar> findBarById(@PathVariable long barId) {
         try {
             Bar bar = barService.findById(barId);
             return ResponseEntity.ok(bar);  //return 200
@@ -52,6 +62,7 @@ public class BarController {
         }
     }
 	
+	@ApiOperation(value = "Creates a bar with the information provided.")
 	@PostMapping(value = "/bars")
     public ResponseEntity<Bar> addBar(@Valid @RequestBody Bar bar) throws URISyntaxException {
         try {
@@ -65,9 +76,10 @@ public class BarController {
             //log exception, return Bad Request (400)
             logger.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        } 
     }
 	
+	@ApiOperation(value = "Updates a bar with given id on database.")
 	@PutMapping(value = "/bars/{barId}")
     public ResponseEntity<Bar> updateBar(@Valid @RequestBody Bar bar, @PathVariable long barId) {
         try {
@@ -85,6 +97,7 @@ public class BarController {
         }
     }
 	
+	@ApiOperation(value = "Delete bar with given id.")
 	@DeleteMapping(path="/bars/{barId}")
     public ResponseEntity<Void> deleteBarById(@PathVariable long barId) {
         try {
@@ -95,5 +108,36 @@ public class BarController {
             return ResponseEntity.notFound().build();
         }
     }
+	
+//	@ApiOperation(value = "Raffles some bar on database and provides Uber run information from the office to the pub.")
+//	//raffle endpoint
+//	@PostMapping(path="/raffle")
+//	public ResponseEntity<RaffleResult> raffleBar(@RequestBody Long officeId){
+//		Office office = new Office();
+//		Bar bar = new Bar();
+//		RaffleResult raffleResult = new RaffleResult();
+//		Random rd = new Random();
+//		long barId;
+//		
+//		try {
+//			office = officeService.findById(officeId); //get the choosen office
+//		} catch (ResourceNotFoundException e) {
+//			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+//		}
+//		
+//		raffleResult.setOfficeName(office.getName()); //set the office name for the response
+//		raffleResult.setOfficeAddress(office.getAddress()); //set the office address for the response
+//		
+//		barId = (long) rd.nextInt(6); //raffles the bar
+//		
+//		try {
+//			bar = barService.findById(barId); //get the raffled bar
+//		} catch (ResourceNotFoundException e) {
+//			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+//		}
+//		
+//		raffleResult.setPubName(bar.getName());
+//		raffleResult.setPubAddress(bar.getAddress());
+//	}
 	
 }

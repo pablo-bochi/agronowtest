@@ -11,6 +11,4 @@ import com.example.agronowtest.model.Bar;
  * @author Pablo
  *
  */
-public interface BarRepository extends PagingAndSortingRepository<Bar, Long> {
-
-}
+public interface BarRepository extends PagingAndSortingRepository<Bar, Long> {}
