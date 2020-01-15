@@ -6,7 +6,7 @@ public class RaffleResult {
 	private String officeAddress;
 	private String pubName;
 	private String pubAddress;
-	private int duration;
+	private float duration;
 	private float distance;
 	private String estimateX;
 	private String estimateSelect;
@@ -40,10 +40,10 @@ public class RaffleResult {
 		this.pubAddress = pubAddress;
 	}
 	
-	public int getDuration() {
+	public float getDuration() {
 		return duration;
 	}
-	public void setDuration(int duration) {
+	public void setDuration(float duration) {
 		this.duration = duration;
 	}
 	

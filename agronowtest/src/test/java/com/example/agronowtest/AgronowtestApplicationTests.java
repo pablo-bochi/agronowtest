@@ -31,9 +31,11 @@ class AgronowtestApplicationTests {
         b.setAddress("Rua Mourato Coelho, 24, Pinheiros, São Paulo - SP");
         b.setCoordinates("-23.566185, -46.685420");
         
+        //test adding new bar
         barService.save(b);
         assertNotNull(b.getId());
         
+        //test list
         Bar findBar = barService.findById(b.getId());
         assertEquals("Fast Berlin", findBar.getName());
         assertEquals("Rua Mourato Coelho, 24, Pinheiros, São Paulo - SP", findBar.getAddress());

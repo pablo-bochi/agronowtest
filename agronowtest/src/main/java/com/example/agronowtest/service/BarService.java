@@ -75,7 +75,7 @@ public class BarService {
         }
     }
 	
-	public Long count() {
+	public long count() {
         return barRepository.count();
     }
 	

@@ -1,5 +1,6 @@
 package com.example.agronowtest.controller;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -30,11 +31,17 @@ import com.example.agronowtest.model.Office;
 import com.example.agronowtest.model.RaffleResult;
 import com.example.agronowtest.service.BarService;
 import com.example.agronowtest.service.OfficeService;
+import com.uber.sdk.core.client.ServerTokenSession;
+import com.uber.sdk.core.client.SessionConfiguration;
+import com.uber.sdk.rides.client.UberRidesApi;
+import com.uber.sdk.rides.client.model.PriceEstimate;
+import com.uber.sdk.rides.client.model.PriceEstimatesResponse;
+import com.uber.sdk.rides.client.services.RidesService;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
+@ApiOperation(value = "Controls the endpoints to Bars CRUD operations.")
 public class BarController {
 
 	@Autowired
@@ -56,6 +63,7 @@ public class BarController {
     public ResponseEntity<Bar> findBarById(@PathVariable long barId) {
         try {
             Bar bar = barService.findById(barId);
+            System.out.println(barService.count());
             return ResponseEntity.ok(bar);  //return 200
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); //return 404
@@ -109,35 +117,110 @@ public class BarController {
         }
     }
 	
-//	@ApiOperation(value = "Raffles some bar on database and provides Uber run information from the office to the pub.")
-//	//raffle endpoint
-//	@PostMapping(path="/raffle")
-//	public ResponseEntity<RaffleResult> raffleBar(@RequestBody Long officeId){
-//		Office office = new Office();
-//		Bar bar = new Bar();
-//		RaffleResult raffleResult = new RaffleResult();
-//		Random rd = new Random();
-//		long barId;
-//		
-//		try {
-//			office = officeService.findById(officeId); //get the choosen office
-//		} catch (ResourceNotFoundException e) {
-//			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-//		}
-//		
-//		raffleResult.setOfficeName(office.getName()); //set the office name for the response
-//		raffleResult.setOfficeAddress(office.getAddress()); //set the office address for the response
-//		
-//		barId = (long) rd.nextInt(6); //raffles the bar
-//		
-//		try {
-//			bar = barService.findById(barId); //get the raffled bar
-//		} catch (ResourceNotFoundException e) {
-//			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-//		}
-//		
-//		raffleResult.setPubName(bar.getName());
-//		raffleResult.setPubAddress(bar.getAddress());
-//	}
+	//raffle endpoint
+	@ApiOperation(value = "Raffles some bar on database and provides Uber run information from the office to the pub.")
+	@PostMapping(path="/raffle")
+	public ResponseEntity<RaffleResult> raffleBar(@Valid @RequestBody long officeId){
+		Office office = new Office();
+		Bar bar = new Bar();
+		RaffleResult raffleResult = new RaffleResult();
+		Random rd = new Random();
+		long barId;
+		
+		try {
+			office = officeService.findById(officeId); //get the chosen office
+		} catch (ResourceNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+		
+		raffleResult.setOfficeName(office.getName()); //set the office name for the response
+		raffleResult.setOfficeAddress(office.getAddress()); //set the office address for the response
+		
+		barId = (long) rd.nextInt((int) barService.count()); //raffles the bar
+		
+		try {
+			bar = barService.findById(barId); //get the raffled bar
+		} catch (ResourceNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+		
+		raffleResult.setPubName(bar.getName());
+		raffleResult.setPubAddress(bar.getAddress());
+		
+		List<PriceEstimate> priceEstimateList = getRideInfo(bar.getCoordinates(), office.getCoordinates()); //call the request to uber API to get ride info
+		
+		//Get estimate, distance and duration for uberx, uber select and uber black
+		String productName;
+		
+		String uberxEstimate = "";
+		String uberSelectEstimate = "";
+		String uberBlackEstimate = "";
+		
+		float rideDuration = priceEstimateList.get(0).getDuration();
+		float rideDistance = priceEstimateList.get(0).getDistance();
+		
+		for(int i=0; i<priceEstimateList.size(); i++) {
+			productName = priceEstimateList.get(i).getDisplayName().toLowerCase();
+			
+			switch (productName) {
+				case "uberx":
+					uberxEstimate = priceEstimateList.get(i).getEstimate();
+				break;
+				
+				case "uberselect":
+					uberSelectEstimate = priceEstimateList.get(i).getEstimate();
+				break;
+				
+				case "uberblack":
+					uberBlackEstimate = priceEstimateList.get(i).getEstimate();
+				break;
+
+				default:
+				break;
+			}
+		}
+		
+		raffleResult.setDistance(rideDistance);
+		raffleResult.setDuration(rideDuration);
+		raffleResult.setEstimateX(uberxEstimate);
+		raffleResult.setEstimateSelect(uberSelectEstimate);
+		raffleResult.setEstimateBlack(uberBlackEstimate);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(raffleResult);
+	}
 	
+	private static List<PriceEstimate> getRideInfo(String barCoordinates, String officeCoordinates) {
+		//treating the coodinates
+		String[] startCoord = officeCoordinates.split(",");
+		String[] endCoord = barCoordinates.split(",");
+		
+		float startLat = Float.parseFloat(startCoord[0]);
+		float startLong = Float.parseFloat(startCoord[1]);
+		
+		float endLat = Float.parseFloat(endCoord[0]);
+		float endLong = Float.parseFloat(endCoord[1]);
+		
+		//initializing session in uber api
+		SessionConfiguration config = new SessionConfiguration.Builder()
+			    .setClientId("Dykpa6OMxqUEWON3IQjJSX3oO-jZVvkI")
+			    .setServerToken("YOUR_SERVER_TOKEN")
+			    .build();
+
+		ServerTokenSession session = new ServerTokenSession(config);
+		
+		UberRidesApi uberRidesApi = UberRidesApi.with(session).build();
+		
+		RidesService service = uberRidesApi.createService();
+		
+		//Get prices for the ride with given location (pub and office)
+		List<PriceEstimate> priceEstimateList = null;
+		try {
+			PriceEstimatesResponse priceEstimate = service.getPriceEstimates(startLat, startLong, endLat, endLong).execute().body();
+			priceEstimateList = priceEstimate.getPrices();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		return priceEstimateList;
+	}
 }
