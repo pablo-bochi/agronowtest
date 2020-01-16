@@ -1,18 +1,20 @@
 # Agronowtest
-Repositório criado para teste da Agronow.
+Repositório criado para projeto teste da Agronow.
 
-Setup
+## Pré-requisitos
+É necessário ter instalado Docker e Apache Tomcat.
 
+### Setup
 Deploy pelo Apache Tomcat:
 
 
 Deploy pelo Docker:
 
 
-Utilização da aplicação:
+### Utilização da aplicação
 A documentação da API pode ser acessada via Swagger UI, pelo link http://localhost:8080/swagger-ui.html, uma vez que a aplicação esteja rodando.
 
-Operações C.R.U.D.:
+#### Operações C.R.U.D.
 - Para adicionar um novo bar, basta enviar uma requisição do tipo POST na URL http://localhost:8080/bar, com o seguinte corpo:
 {
     "name": "bar-name",
@@ -38,3 +40,12 @@ Para realizar sorteio do bar e ter as estimativas de valor e distância, é nece
 {
     "officeId": <office-id>
 }
+  
+## Feito com
+
+* [Spring-boot](https://spring.io/guides/gs/spring-boot/)
+* [Maven](https://maven.apache.org/) 
+* [Uber API](https://developer.uber.com/)
+  
+## Autor
+Pablo Vilela Bochi
