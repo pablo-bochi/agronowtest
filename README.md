@@ -33,10 +33,9 @@ A documentação da API pode ser acessada via Swagger UI, pelo link http://local
     "coordinates": "lat, long (updated)"
 }
 
-Para deletar um bar do banco de dados, basta enviar uma requisição do tipo DELETE para a URL http://localhost:8080/bar/{barId}, onde barId é o ID do bar que deverá ser removido.
+- Para deletar um bar do banco de dados, basta enviar uma requisição do tipo DELETE para a URL http://localhost:8080/bar/{barId}, onde barId é o ID do bar que deverá ser removido.
 
-(Funcionalidade em desenvolvimento)
-Para realizar sorteio do bar e ter as estimativas de valor e distância, é necessário enviar uma requisição do tipo POST para a URL http://localhost:8080/raffle, com o seguinte corpo:
+- (Funcionalidade em desenvolvimento) Para realizar sorteio do bar e ter as estimativas de valor e distância, é necessário enviar uma requisição do tipo POST para a URL http://localhost:8080/raffle, com o seguinte corpo:
 {
     "officeId": <office-id>
 }
