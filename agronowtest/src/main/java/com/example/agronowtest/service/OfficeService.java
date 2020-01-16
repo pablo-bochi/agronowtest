@@ -39,9 +39,9 @@ public class OfficeService {
     }
 	
 	public Office save(Office office) throws BadResourceException, ResourceAlreadyExistsException {
-        if (!StringUtils.isEmpty(office.getName())) {
-            if (office.getId() != null && existsById(office.getId())) { 
-                throw new ResourceAlreadyExistsException("Office with id: " + office.getId() + " already exists");
+        if (!StringUtils.isEmpty(office.getOfficeName())) {
+            if (office.getOfficeId() != null && existsById(office.getOfficeId())) { 
+                throw new ResourceAlreadyExistsException("Office with id: " + office.getOfficeId() + " already exists");
             }
             return officeRepository.save(office);
         }
@@ -53,9 +53,9 @@ public class OfficeService {
     }
 	
 	public void update(Office office) throws BadResourceException, ResourceNotFoundException {
-        if (!StringUtils.isEmpty(office.getName())) {
-            if (!existsById(office.getId())) {
-                throw new ResourceNotFoundException("Cannot find office with id: " + office.getId());
+        if (!StringUtils.isEmpty(office.getOfficeName())) {
+            if (!existsById(office.getOfficeId())) {
+                throw new ResourceNotFoundException("Cannot find office with id: " + office.getOfficeId());
             }
             officeRepository.save(office);
         }

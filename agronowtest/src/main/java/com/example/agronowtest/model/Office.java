@@ -14,38 +14,38 @@ public class Office implements Serializable {
 
 	@Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private Long id;
+    private Long officeId;
 	
-	private String name;
-	private String address;
-	private String coordinates;
+	private String officeName;
+	private String officeAddress;
+	private String officeCoordinates;
 	
-	public Long getId() {
-		return id;
+	public Long getOfficeId() {
+		return officeId;
 	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
+	public void setOfficeId(Long id) {
+		this.officeId = id;
 	}
 	
-	public String getAddress() {
-		return address;
+	public String getOfficeName() {
+		return officeName;
 	}
-	public void setAddress(String address) {
-		this.address = address;
+	public void setOfficeName(String name) {
+		this.officeName = name;
 	}
 	
-	public String getCoordinates() {
-		return coordinates;
+	public String getOfficeAddress() {
+		return officeAddress;
 	}
-	public void setCoordinates(String coordinates) {
-		this.coordinates = coordinates;
+	public void setOfficeAddress(String address) {
+		this.officeAddress = address;
+	}
+	
+	public String getOfficeCoordinates() {
+		return officeCoordinates;
+	}
+	public void setOfficeCoordinates(String coordinates) {
+		this.officeCoordinates = coordinates;
 	}
 	
 }

@@ -54,7 +54,7 @@ public class BarController {
 	
 	@ApiOperation(value = "Returns a list of all bars on database.")
 	@GetMapping(value = "/bars", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Bar>> findAll(@RequestParam(value="page", defaultValue="1") int pageNumber) {
+    public ResponseEntity<List<Bar>> findAllBars(@RequestParam(value="page", defaultValue="1") int pageNumber) {
         return ResponseEntity.ok(barService.findAll(pageNumber, ROW_PER_PAGE));
     }
 	
@@ -63,7 +63,6 @@ public class BarController {
     public ResponseEntity<Bar> findBarById(@PathVariable long barId) {
         try {
             Bar bar = barService.findById(barId);
-            System.out.println(barService.count());
             return ResponseEntity.ok(bar);  //return 200
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); //return 404
@@ -72,17 +71,15 @@ public class BarController {
 	
 	@ApiOperation(value = "Creates a bar with the information provided.")
 	@PostMapping(value = "/bars")
-    public ResponseEntity<Bar> addBar(@Valid @RequestBody Bar bar) throws URISyntaxException {
+    public ResponseEntity<Bar> saveBar(@Valid @RequestBody Bar bar) throws URISyntaxException {
         try {
             Bar newBar = barService.save(bar);
-            return ResponseEntity.created(new URI("/bars/" + newBar.getId())).body(bar);
+            return ResponseEntity.created(new URI("/bars/" + newBar.getBarId())).body(bar);
         } catch (ResourceAlreadyExistsException ex) {
-            //log exception, return Conflict (409)
-            logger.error(ex.getMessage());
+            logger.error(ex.getMessage()); //log exception, return Conflict (409)
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (BadResourceException ex) {
-            //log exception, return Bad Request (400)
-            logger.error(ex.getMessage());
+            logger.error(ex.getMessage()); //log exception, return Bad Request (400)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } 
     }
@@ -91,16 +88,14 @@ public class BarController {
 	@PutMapping(value = "/bars/{barId}")
     public ResponseEntity<Bar> updateBar(@Valid @RequestBody Bar bar, @PathVariable long barId) {
         try {
-            bar.setId(barId);
+            bar.setBarId(barId);
             barService.update(bar);
             return ResponseEntity.ok().build();
         } catch (ResourceNotFoundException ex) {
-            //log exception, return Not Found (404)
-            logger.error(ex.getMessage());
+            logger.error(ex.getMessage()); //log exception, return Not Found (404)
             return ResponseEntity.notFound().build();
         } catch (BadResourceException ex) {
-            //log exception, return Bad Request (400)
-            logger.error(ex.getMessage());
+            logger.error(ex.getMessage()); //log exception, return Bad Request (400)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
@@ -119,8 +114,9 @@ public class BarController {
 	
 	//raffle endpoint
 	@ApiOperation(value = "Raffles some bar on database and provides Uber run information from the office to the pub.")
-	@PostMapping(path="/raffle")
-	public ResponseEntity<RaffleResult> raffleBar(@Valid @RequestBody long officeId){
+	@PostMapping(path="/raffle/{officeId}")
+	public ResponseEntity<RaffleResult> raffleBar(@Valid @PathVariable long officeId){
+		officeService = new OfficeService();
 		Office office = new Office();
 		Bar bar = new Bar();
 		RaffleResult raffleResult = new RaffleResult();
@@ -133,8 +129,8 @@ public class BarController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
 		
-		raffleResult.setOfficeName(office.getName()); //set the office name for the response
-		raffleResult.setOfficeAddress(office.getAddress()); //set the office address for the response
+		raffleResult.setOfficeName(office.getOfficeName()); //set the office name for the response
+		raffleResult.setOfficeAddress(office.getOfficeAddress()); //set the office address for the response
 		
 		barId = (long) rd.nextInt((int) barService.count()); //raffles the bar
 		
@@ -144,10 +140,10 @@ public class BarController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
 		
-		raffleResult.setPubName(bar.getName());
-		raffleResult.setPubAddress(bar.getAddress());
+		raffleResult.setPubName(bar.getBarName());
+		raffleResult.setPubAddress(bar.getBarAddress());
 		
-		List<PriceEstimate> priceEstimateList = getRideInfo(bar.getCoordinates(), office.getCoordinates()); //call the request to uber API to get ride info
+		List<PriceEstimate> priceEstimateList = getRideInfo(bar.getBarCoordinates(), office.getOfficeCoordinates()); //call the request to uber API to get ride info
 		
 		//Get estimate, distance and duration for uberx, uber select and uber black
 		String productName;

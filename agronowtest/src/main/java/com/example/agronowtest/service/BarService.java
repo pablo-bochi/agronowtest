@@ -39,9 +39,9 @@ public class BarService {
     }
 	
 	public Bar save(Bar bar) throws BadResourceException, ResourceAlreadyExistsException {
-        if (!StringUtils.isEmpty(bar.getName())) {
-            if (bar.getId() != null && existsById(bar.getId())) { 
-                throw new ResourceAlreadyExistsException("Bar with id: " + bar.getId() + " already exists");
+        if (!StringUtils.isEmpty(bar.getBarName())) {
+            if (bar.getBarId() != null && existsById(bar.getBarId())) { 
+                throw new ResourceAlreadyExistsException("Bar with id: " + bar.getBarId() + " already exists");
             }
             return barRepository.save(bar);
         }
@@ -53,9 +53,9 @@ public class BarService {
     }
 	
 	public void update(Bar bar) throws BadResourceException, ResourceNotFoundException {
-        if (!StringUtils.isEmpty(bar.getName())) {
-            if (!existsById(bar.getId())) {
-                throw new ResourceNotFoundException("Cannot find bar with id: " + bar.getId());
+        if (!StringUtils.isEmpty(bar.getBarName())) {
+            if (!existsById(bar.getBarId())) {
+                throw new ResourceNotFoundException("Cannot find bar with id: " + bar.getBarId());
             }
             barRepository.save(bar);
         }

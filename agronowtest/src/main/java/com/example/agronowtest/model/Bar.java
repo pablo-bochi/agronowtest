@@ -15,40 +15,40 @@ public class Bar implements Serializable {
 
 	@Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private Long id;
+    private Long barId;
 	
-	private String name;
-	private String address;
+	private String barName;
+	private String barAddress;
 	
 	@Column(unique=true)
-	private String coordinates;
+	private String barCoordinates;
 	
-	public Long getId() {
-		return id;
+	public Long getBarId() {
+		return barId;
 	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
+	public void setBarId(Long id) {
+		this.barId = id;
 	}
 	
-	public String getAddress() {
-		return address;
+	public String getBarName() {
+		return barName;
 	}
-	public void setAddress(String address) {
-		this.address = address;
+	public void setBarName(String name) {
+		this.barName = name;
 	}
 	
-	public String getCoordinates() {
-		return coordinates;
+	public String getBarAddress() {
+		return barAddress;
 	}
-	public void setCoordinates(String coordinates) {
-		this.coordinates = coordinates;
+	public void setBarAddress(String address) {
+		this.barAddress = address;
+	}
+	
+	public String getBarCoordinates() {
+		return barCoordinates;
+	}
+	public void setBarCoordinates(String coordinates) {
+		this.barCoordinates = coordinates;
 	}
 	
 }
