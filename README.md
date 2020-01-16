@@ -39,12 +39,8 @@ A documentação da API pode ser acessada via Swagger UI, pelo link http://local
 ```
 - Para deletar um bar do banco de dados, basta enviar uma requisição do tipo DELETE para a URL http://localhost:8080/agronowtest-1.0.0/bar/{barId}, onde barId é o ID do bar que deverá ser removido.
 
-- (Funcionalidade em desenvolvimento) Para realizar sorteio do bar e ter as estimativas de valor e distância, é necessário enviar uma requisição do tipo POST para a URL http://localhost:8080/agronowtest-1.0.0/raffle, com o seguinte corpo:
-```
-{
-    "officeId": <office-id>
-}
-```
+- (Funcionalidade em desenvolvimento) Para realizar sorteio do bar e ter as estimativas de valor e distância, é necessário enviar uma requisição do tipo POST para a URL http://localhost:8080/agronowtest-1.0.0/raffle/{officeId}, onde officeId é o id do escritório que será utilizado como referência de ponto inicial para a estimativa das corridas de Uber.
+
 ## Feito com
 
 * [Spring-boot](https://spring.io/guides/gs/spring-boot/)
